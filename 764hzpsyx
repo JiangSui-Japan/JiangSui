@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>化妆品适用性测试</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+    background-color: #0a0a0a;
+    color: #e8e8e8;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+  }
+
+  /* 登录页面 */
+  #login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    width: 100%;
+  }
+
+  .login-container {
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+  }
+
+  .login-container h1 {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 6px;
+    margin-bottom: 60px;
+    color: #ffffff;
+  }
+
+  .login-container h1 span {
+    color: #722f37;
+  }
+
+  .login-line {
+    width: 60px;
+    height: 1px;
+    background-color: #722f37;
+    margin: 0 auto 40px;
+  }
+
+  .login-input {
+    width: 100%;
+    max-width: 280px;
+    padding: 14px 0;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #333;
+    color: #e8e8e8;
+    font-size: 16px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.3s;
+    letter-spacing: 2px;
+  }
+
+  .login-input:focus {
+    border-bottom-color: #722f37;
+  }
+
+  .login-input::placeholder {
+    color: #555;
+    letter-spacing: 4px;
+  }
+
+  .login-btn {
+    display: block;
+    margin: 50px auto 0;
+    padding: 12px 60px;
+    background: transparent;
+    border: 1px solid #722f37;
+    color: #c4a882;
+    font-size: 14px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .login-btn:hover {
+    background-color: #722f37;
+    color: #fff;
+  }
+
+  .login-error {
+    color: #722f37;
+    font-size: 12px;
+    margin-top: 16px;
+    min-height: 18px;
+  }
+
+  /* 主页面 */
+  #main-page {
+    display: none;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .header {
+    text-align: center;
+    padding: 30px 0 20px;
+    border-bottom: 1px solid #1a1a1a;
+    margin-bottom: 40px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+    font-weight: 300;
+    letter-spacing: 6px;
+    color: #ffffff;
+  }
+
+  .header .user-info {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #666;
+    letter-spacing: 2px;
+  }
+
+  .header .user-info span {
+    color: #c4a882;
+  }
+
+  .header .logout-btn {
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 16px;
+    letter-spacing: 2px;
+    transition: color 0.3s;
+  }
+
+  .header .logout-btn:hover {
+    color: #722f37;
+  }
+
+  .content-wrapper {
+    display: flex;
+    gap: 50px;
+    align-items: flex-start;
+  }
+
+  /* 左侧测试区 */
+  .test-section {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 4px;
+    margin-bottom: 30px;
+    color: #999;
+    position: relative;
+    padding-left: 16px;
+  }
+
+  .section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 16px;
+    background-color: #722f37;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 30px;
+  }
+
+  .category-item {
+    padding: 14px 0;
+    text-align: center;
+    border: 1px solid #1a1a1a;
+    background: transparent;
+    color: #777;
+    font-size: 14px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .category-item:hover {
+    border-color: #333;
+    color: #bbb;
+  }
+
+  .category-item.active {
+    border-color: #722f37;
+    color: #e8e8e8;
+    background-color: rgba(114, 47, 55, 0.1);
+  }
+
+  .product-input-group {
+    margin-bottom: 30px;
+  }
+
+  .product-input-group label {
+    display: block;
+    font-size: 13px;
+    color: #555;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  .product-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: #0f0f0f;
+    border: 1px solid #1a1a1a;
+    color: #e8e8e8;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.3s;
+    letter-spacing: 2px;
+  }
+
+  .product-input:focus {
+    border-color: #722f37;
+  }
+
+  .product-input::placeholder {
+    color: #333;
+  }
+
+  .test-btn {
+    width: 100%;
+    padding: 16px;
+    background-color: #722f37;
+    border: none;
+    color: #e8e8e8;
+    font-size: 15px;
+    letter-spacing: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .test-btn:hover {
+    background-color: #8b3a44;
+  }
+
+  .test-btn:active {
+    background-color: #5c2630;
+  }
+
+  .test-error {
+    color: #722f37;
+    font-size: 12px;
+    margin-top: 12px;
+    min-height: 16px;
+    letter-spacing: 1px;
+  }
+
+  /* 右侧历史记录 */
+  .history-section {
+    width: 300px;
+    flex-shrink: 0;
+  }
+
+  .history-list {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 8px;
+  }
+
+  .history-list::-webkit-scrollbar {
+    width: 2px;
+  }
+
+  .history-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .history-list::-webkit-scrollbar-thumb {
+    background: #333;
+  }
+
+  .history-group {
+    margin-bottom: 20px;
+  }
+
+  .history-group-title {
+    font-size: 12px;
+    color: #444;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #151515;
+  }
+
+  .history-item {
+    font-size: 13px;
+    line-height: 2;
+    letter-spacing: 1px;
+    color: #888;
+  }
+
+  .history-item.good {
+    color: #2d6a4f;
+  }
+
+  .history-item.poor {
+    color: #722f37;
+  }
+
+  .history-empty {
+    font-size: 13px;
+    color: #333;
+    letter-spacing: 2px;
+    text-align: center;
+    padding: 40px 0;
+  }
+
+  .clear-btn {
+    margin-top: 16px;
+    background: none;
+    border: 1px solid #1a1a1a;
+    color: #444;
+    font-size: 12px;
+    padding: 8px 20px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all 0.3s;
+    width: 100%;
+  }
+
+  .clear-btn:hover {
+    border-color: #722f37;
+    color: #722f37;
+  }
+
+  /* 弹窗 */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-overlay.show {
+    display: flex;
+  }
+
+  .modal {
+    background: #111;
+    border: 1px solid #222;
+    padding: 50px 40px;
+    max-width: 440px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    animation: modalIn 0.3s ease;
+  }
+
+  @keyframes modalIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .modal-category {
+    font-size: 12px;
+    color: #555;
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+  }
+
+  .modal-product {
+    font-size: 18px;
+    color: #c4a882;
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+  }
+
+  .modal-line {
+    width: 40px;
+    height: 1px;
+    background: #722f37;
+    margin: 0 auto 30px;
+  }
+
+  .modal-result {
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+  }
+
+  .modal-result.good {
+    color: #2d6a4f;
+  }
+
+  .modal-result.normal {
+    color: #b8860b;
+  }
+
+  .modal-result.poor {
+    color: #722f37;
+  }
+
+  .modal-desc {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.8;
+    letter-spacing: 1px;
+    margin-bottom: 36px;
+    padding: 0 10px;
+  }
+
+  .modal-close {
+    padding: 10px 50px;
+    background: transparent;
+    border: 1px solid #333;
+    color: #888;
+    font-size: 13px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .modal-close:hover {
+    border-color: #722f37;
+    color: #e8e8e8;
+  }
+
+  /* 响应式 */
+  @media (max-width: 700px) {
+    .content-wrapper {
+      flex-direction: column;
+    }
+    .history-section {
+      width: 100%;
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid #1a1a1a;
+    }
+    .category-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 登录页面 -->
+  <div id="login-page">
+    <div class="login-container">
+      <h1>化妆品<span>适用性</span>测试</h1>
+      <div class="login-line"></div>
+      <input type="text" class="login-input" id="name-input" placeholder="请输入姓名" maxlength="20">
+      <div class="login-error" id="login-error"></div>
+      <button class="login-btn" id="login-btn">进 入</button>
+    </div>
+  </div>
+
+  <!-- 主页面 -->
+  <div id="main-page">
+    <div class="header">
+      <h1>化妆品适用性测试</h1>
+      <div class="user-info">
+        当前用户：<span id="display-name"></span>
+        <button class="logout-btn" id="logout-btn">退出</button>
+      </div>
+    </div>
+
+    <div class="content-wrapper">
+      <!-- 左侧测试区 -->
+      <div class="test-section">
+        <div class="section-title">选择化妆品类别</div>
+        <div class="category-grid" id="category-grid">
+          <div class="category-item" data-category="妆粉">妆粉</div>
+          <div class="category-item" data-category="眉黛">眉黛</div>
+          <div class="category-item" data-category="面脂">面脂</div>
+          <div class="category-item" data-category="胭脂">胭脂</div>
+          <div class="category-item" data-category="口脂">口脂</div>
+          <div class="category-item" data-category="护肤品">护肤品</div>
+        </div>
+
+        <div class="product-input-group">
+          <label>输入化妆品名称</label>
+          <input type="text" class="product-input" id="product-input" placeholder="请输入具体化妆品名称" maxlength="30">
+        </div>
+
+        <button class="test-btn" id="test-btn">适 用 性 测 试</button>
+        <div class="test-error" id="test-error"></div>
+      </div>
+
+      <!-- 右侧历史记录 -->
+      <div class="history-section">
+        <div class="section-title">历史记录</div>
+        <div class="history-list" id="history-list">
+          <div class="history-empty" id="history-empty">暂无测试记录</div>
+        </div>
+        <button class="clear-btn" id="clear-btn" style="display:none;">清空记录</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结果弹窗 -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-category" id="modal-category"></div>
+      <div class="modal-product" id="modal-product"></div>
+      <div class="modal-line"></div>
+      <div class="modal-result" id="modal-result"></div>
+      <div class="modal-desc" id="modal-desc"></div>
+      <button class="modal-close" id="modal-close">确 定</button>
+    </div>
+  </div>
+
+<script>
+(function() {
+  // 类别顺序
+  var categoryOrder = ['妆粉', '眉黛', '面脂', '胭脂', '口脂', '护肤品'];
+
+  // 结果描述映射
+  var descriptions = {
+    '适用性良好': {
+      '妆粉': '该款化妆品服帖度与显色度较好，不易晕妆或掉色。',
+      '眉黛': '该款化妆品服帖度与显色度较好，不易晕妆或掉色。',
+      '面脂': '该系列化妆品服帖度与显色度较好，不易晕妆或掉色。',
+      '胭脂': '该系列化妆品服帖度与显色度较好，不易晕妆或掉色。',
+      '口脂': '该系列化妆品服帖度与显色度较好，不易晕妆或掉色。',
+      '护肤品': '该款护肤品所有功效增强20%。'
+    },
+    '适用性一般': {
+      '妆粉': '该款化妆品服帖度与显色度正常，持妆时间超过6小时或处于极端天气下，则容易卡粉、斑驳。',
+      '眉黛': '该款化妆品服帖度与显色度正常，持妆时间超过6小时或处于极端天气下，则容易卡粉、斑驳。',
+      '面脂': '该款化妆品服帖度与显色度正常，持妆时间超过6小时或处于极端天气下，则容易晕染、掉色。',
+      '胭脂': '该款化妆品服帖度与显色度正常，持妆时间超过6小时或处于极端天气下，则容易晕染、掉色。',
+      '口脂': '该款化妆品服帖度与显色度正常，持妆时间超过6小时或处于极端天气下，则容易晕染、掉色。',
+      '护肤品': '该款护肤品所有功效正常发挥作用，可能有增强10%或减弱10%的随机变动。'
+    },
+    '适用性较差': {
+      '妆粉': '该款化妆品服帖度与显色度均较差，易卡粉、斑驳。',
+      '眉黛': '该款化妆品服帖度与显色度均较差，易卡粉、斑驳。',
+      '面脂': '该系列化妆品服帖度与显色度均较差，易晕染、掉色，易导致底妆卡粉、斑驳。',
+      '胭脂': '该系列化妆品服帖度与显色度均较差，易晕染、掉色，易导致底妆卡粉、斑驳。',
+      '口脂': '该系列化妆品服帖度与显色度均较差，易晕染、掉色，易导致底妆卡粉、斑驳。',
+      '护肤品': '该款护肤品所有功效减弱30%。'
+    }
+  };
+
+  var selectedCategory = '';
+  var currentUser = '';
+
+  // 获取元素
+  var loginPage = document.getElementById('login-page');
+  var mainPage = document.getElementById('main-page');
+  var nameInput = document.getElementById('name-input');
+  var loginBtn = document.getElementById('login-btn');
+  var loginError = document.getElementById('login-error');
+  var displayName = document.getElementById('display-name');
+  var logoutBtn = document.getElementById('logout-btn');
+  var categoryGrid = document.getElementById('category-grid');
+  var productInput = document.getElementById('product-input');
+  var testBtn = document.getElementById('test-btn');
+  var testError = document.getElementById('test-error');
+  var historyList = document.getElementById('history-list');
+  var historyEmpty = document.getElementById('history-empty');
+  var clearBtn = document.getElementById('clear-btn');
+  var modalOverlay = document.getElementById('modal-overlay');
+  var modalCategory = document.getElementById('modal-category');
+  var modalProduct = document.getElementById('modal-product');
+  var modalResult = document.getElementById('modal-result');
+  var modalDesc = document.getElementById('modal-desc');
+  var modalClose = document.getElementById('modal-close');
+
+  // 检查是否已登录
+  var savedUser = localStorage.getItem('cosmetic_test_user');
+  if (savedUser) {
+    currentUser = savedUser;
+    enterMain();
+  }
+
+  // 登录
+  loginBtn.addEventListener('click', function() {
+    var name = nameInput.value.trim();
+    if (!name) {
+      loginError.textContent = '请输入姓名';
+      return;
+    }
+    loginError.textContent = '';
+    currentUser = name;
+    localStorage.setItem('cosmetic_test_user', name);
+    enterMain();
+  });
+
+  nameInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      loginBtn.click();
+    }
+  });
+
+  // 进入主页面
+  function enterMain() {
+    loginPage.style.display = 'none';
+    mainPage.style.display = 'block';
+    displayName.textContent = currentUser;
+    loadHistory();
+  }
+
+  // 退出
+  logoutBtn.addEventListener('click', function() {
+    localStorage.removeItem('cosmetic_test_user');
+    currentUser = '';
+    selectedCategory = '';
+    mainPage.style.display = 'none';
+    loginPage.style.display = 'flex';
+    nameInput.value = '';
+    productInput.value = '';
+    testError.textContent = '';
+    var items = categoryGrid.querySelectorAll('.category-item');
+    for (var i = 0; i < items.length; i++) {
+      items[i].classList.remove('active');
+    }
+  });
+
+  // 选择类别
+  categoryGrid.addEventListener('click', function(e) {
+    if (e.target.classList.contains('category-item')) {
+      var items = categoryGrid.querySelectorAll('.category-item');
+      for (var i = 0; i < items.length; i++) {
+        items[i].classList.remove('active');
+      }
+      e.target.classList.add('active');
+      selectedCategory = e.target.getAttribute('data-category');
+      testError.textContent = '';
+    }
+  });
+
+  // 测试按钮
+  testBtn.addEventListener('click', function() {
+    if (!selectedCategory) {
+      testError.textContent = '请先选择化妆品类别';
+      return;
+    }
+    var productName = productInput.value.trim();
+    if (!productName) {
+      testError.textContent = '请输入化妆品名称';
+      return;
+    }
+    testError.textContent = '';
+
+    // 使用化妆品名称+类别生成固定的哈希结果，保证同一产品每次结果一致
+    var key = currentUser + '|' + selectedCategory + '|' + productName;
+    var result = getResult(key);
+
+    // 显示弹窗
+    showModal(selectedCategory, productName, result);
+
+    // 保存记录
+    saveRecord(selectedCategory, productName, result);
+
+    // 刷新历史
+    loadHistory();
+  });
+
+  // 基于字符串生成确定性结果
+  function getResult(str) {
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+      var ch = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + ch;
+      hash = hash & hash;
+    }
+    hash = Math.abs(hash);
+    var mod = hash % 100;
+    if (mod < 35) return '适用性良好';
+    if (mod < 70) return '适用性一般';
+    return '适用性较差';
+  }
+
+  // 显示弹窗
+  function showModal(category, product, result) {
+    modalCategory.textContent = category;
+    modalProduct.textContent = product;
+    modalResult.textContent = result;
+    modalResult.className = 'modal-result';
+    if (result === '适用性良好') modalResult.classList.add('good');
+    else if (result === '适用性一般') modalResult.classList.add('normal');
+    else modalResult.classList.add('poor');
+
+    modalDesc.textContent = descriptions[result][category];
+    modalOverlay.classList.add('show');
+  }
+
+  // 关闭弹窗
+  modalClose.addEventListener('click', function() {
+    modalOverlay.classList.remove('show');
+  });
+
+  modalOverlay.addEventListener('click', function(e) {
+    if (e.target === modalOverlay) {
+      modalOverlay.classList.remove('show');
+    }
+  });
+
+  // 存储记录
+  function getStorageKey() {
+    return 'cosmetic_records_' + currentUser;
+  }
+
+  function getRecords() {
+    var data = localStorage.getItem(getStorageKey());
+    if (data) {
+      try { return JSON.parse(data); } catch(e) { return []; }
+    }
+    return [];
+  }
+
+  function saveRecord(category, product, result) {
+    var records = getRecords();
+    // 检查是否已存在同类别同名称的记录，存在则更新
+    var found = false;
+    for (var i = 0; i < records.length; i++) {
+      if (records[i].category === category && records[i].product === product) {
+        records[i].result = result;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      records.push({ category: category, product: product, result: result });
+    }
+    localStorage.setItem(getStorageKey(), JSON.stringify(records));
+  }
+
+  function loadHistory() {
+    var records = getRecords();
+    if (records.length === 0) {
+      historyEmpty.style.display = 'block';
+      clearBtn.style.display = 'none';
+      // 清空分组
+      var groups = historyList.querySelectorAll('.history-group');
+      for (var g = 0; g < groups.length; g++) {
+        groups[g].remove();
+      }
+      return;
+    }
+
+    historyEmpty.style.display = 'none';
+    clearBtn.style.display = 'block';
+
+    // 按类别分组
+    var grouped = {};
+    for (var i = 0; i < categoryOrder.length; i++) {
+      grouped[categoryOrder[i]] = [];
+    }
+    for (var j = 0; j < records.length; j++) {
+      var cat = records[j].category;
+      if (grouped[cat]) {
+        grouped[cat].push(records[j]);
+      }
+    }
+
+    // 清空旧内容
+    var oldGroups = historyList.querySelectorAll('.history-group');
+    for (var k = 0; k < oldGroups.length; k++) {
+      oldGroups[k].remove();
+    }
+
+    // 生成内容
+    for (var m = 0; m < categoryOrder.length; m++) {
+      var catName = categoryOrder[m];
+      var items = grouped[catName];
+      if (items.length === 0) continue;
+
+      var groupDiv = document.createElement('div');
+      groupDiv.className = 'history-group';
+
+      var titleDiv = document.createElement('div');
+      titleDiv.className = 'history-group-title';
+      titleDiv.textContent = catName;
+      groupDiv.appendChild(titleDiv);
+
+      for (var n = 0; n < items.length; n++) {
+        var itemDiv = document.createElement('div');
+        itemDiv.className = 'history-item';
+        if (items[n].result === '适用性良好') itemDiv.classList.add('good');
+        else if (items[n].result === '适用性较差') itemDiv.classList.add('poor');
+        itemDiv.textContent = catName + '·' + items[n].product + '：' + items[n].result;
+        groupDiv.appendChild(itemDiv);
+      }
+
+      historyList.appendChild(groupDiv);
+    }
+  }
+
+  // 清空记录
+  clearBtn.addEventListener('click', function() {
+    localStorage.removeItem(getStorageKey());
+    loadHistory();
+  });
+
+})();
+</script>
+
+</body>
+</html>
